@@ -28,6 +28,7 @@ Z_COLOR equ 9 ;
         out 0x40, al
         out 0x40, al
 
+        mov ah, 4
 start:
         mov al, 0               ; erase before running
         call draw
@@ -38,8 +39,10 @@ frame:  hlt
         call draw
 
         add bx, 320
-        mov al, 4               ; palette color index, 4 for red
+        mov al, ah               ; Loads color
         call draw
+
+        call read_input
 
         cmp bx, 180*320 + 150   ; stop when box reachs y=180
         jb frame
@@ -55,6 +58,24 @@ draw:   mov di, bx
         dec dx
         jnz .row
         ret
+
+read_input:
+        in al, 0x60        ; read the latest scancode
+        cmp al, 0x1E       ; 'A' make code
+        je  .left
+        cmp al, 0x20       ; 'D' make code
+        je  .right
+        ret
+.left:
+        mov al, 0          ; erase then rest
+        call draw
+        mov bx, 100*320 + 150   ; top-left corner: y=100, x=150
+        mov ah, 1
+        ret
+.right:
+        mov ah, 5
+        ret
+
 
 ; Pads size to 512 bytes and adds the 0x55AA boot signature
         times 510 - ($ - $$) db 0
