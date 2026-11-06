@@ -10,7 +10,7 @@ Install `make`, `nasm`, and `qemu-system-i386`, then run this from the repositor
 make run
 ```
 
-This assembles `tetris.asm` into `tetris.bin` and boots it as a raw disk image in QEMU. With the QEMU window focused, press **A** to move the piece left and **D** to move it right.
+This assembles `tetris.asm` into `tetris.bin` and boots it as a raw disk image in QEMU. With the QEMU window focused, press **A** to move the piece left, **D** to move it right **.** to rotate left, and **/** to rotate right.
 
 | Command | What it does |
 | --- | --- |
@@ -21,4 +21,4 @@ This assembles `tetris.asm` into `tetris.bin` and boots it as a raw disk image i
 
 ## Current status
 
-The prototype switches to 320 × 200 VGA graphics and repeatedly drops all 7 pieces, cycling between them. All seven tetromino shapes are stored as 16-bit masks, with one bit per cell in a 4 × 4 grid. Rotation, collision detection, piece stacking, and line clearing are still to be implemented.
+The prototype switches to 320 × 200 VGA graphics and repeatedly drops all 7 pieces, cycling between them. Moving left and right work, as well as rotations. All seven tetromino shapes are stored as four 16-bit masks, one mask per rotation, with one bit per cell in a 4 × 4 grid. Collision detection, piece stacking, line clearing, and scoring  are still to be implemented.

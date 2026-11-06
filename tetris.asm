@@ -38,15 +38,21 @@ start:
         mov bx, 100*320 + 150   ; top-left corner: y=100, x=150
 
         ; Test going through all 7 pieces
-        inc si
-        cmp si, 7
+        and si, -4
+        add si, 4
+        cmp si, 28
         jb frame
         xor si, si
 
 frame:  hlt
+        hlt
+        hlt
+        hlt
         mov al, 0               ; black to erase
         call draw_piece
 
+        ; Input is done after previous piece is erased
+        ; so no cleanup needs to be done
         call read_input
 
         add bx, 320
@@ -91,7 +97,6 @@ draw_piece:
         pop si
         ret
 
-
 ; Draws a single block
 draw:   mov di, bx
         mov dx, BLOCK_SIZE
@@ -103,21 +108,47 @@ draw:   mov di, bx
         ret
 
 read_input:
-        in al, 0x60        ; read the latest scancode
-        cmp al, 0x1E       ; 'A' make code
+        in al, 0x60       ; read the latest scancode
+        cmp al, 0x1E      ; 'A' make code
         je  .left
-        cmp al, 0x20       ; 'D' make code
+        cmp al, 0x20      ; 'D' make code
         je  .right
+        cmp al, 0x34      ; '.' for left rotate
+        je  .left_rotate
+        cmp al, 0x35      ; '/' for right rotate
+        je  .right_rotate
         ret
 .left:
-        sub bx, 10
+        sub bx, BLOCK_SIZE
         ret
 .right:
-        add bx, 10
+        add bx, BLOCK_SIZE
+        ret
+.left_rotate:
+        mov dx, si
+        dec dx      ; -1 for left rotation
+        and dx, 3   ; limits dx to 0..3
+        and si, -4  ; clears low 2 bits for the piece rotation
+        or si, dx   ; adds the base in si with rotation in dx
+        ret
+.right_rotate:
+        mov dx, si
+        inc dx      ; +1 for right rotation
+        and dx, 3
+        and si, -4
+        or si, dx
         ret
 
-; I, O, T, S, Z, J, L
-pieces: dw 0x0F00, 0x6600, 0x4E00, 0x6C00, 0xC600, 0x8E00, 0x2E00
+;       deg   0      90     180     270
+pieces:
+        dw 0x0F00, 0x2222, 0x00F0, 0x4444 ; I
+        dw 0x6600, 0x6600, 0x6600, 0x6600 ; O
+        dw 0x4E00, 0x4640, 0x0E40, 0x4C40 ; T
+        dw 0x6C00, 0x4620, 0x06C0, 0x8C40 ; S
+        dw 0xC600, 0x2640, 0x0C60, 0x4C80 ; Z
+        dw 0x8E00, 0x6440, 0x0E20, 0x44C0 ; J
+        dw 0x2E00, 0x4460, 0x0E80, 0xC440 ; L
+
 ; Pads size to 512 bytes and adds the 0x55AA boot signature
         times 510 - ($ - $$) db 0
         dw 0xAA55
