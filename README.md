@@ -21,4 +21,4 @@ This assembles `tetris.asm` into `tetris.bin` and boots it as a raw disk image i
 
 ## Current status
 
-The prototype switches to 320 × 200 VGA graphics and repeatedly drops a T piece. All seven tetromino shapes are stored as 16-bit masks, with one bit per cell in a 4 × 4 grid. Rotation, collision detection, piece stacking, and line clearing are still to be implemented.
+The prototype switches to 320 × 200 VGA graphics and repeatedly drops all 7 pieces, cycling between them. All seven tetromino shapes are stored as 16-bit masks, with one bit per cell in a 4 × 4 grid. Rotation, collision detection, piece stacking, and line clearing are still to be implemented.
